@@ -12,3 +12,4 @@ client = MongoClient(MONGO_URI)
 db = client[DATABASE_NAME]
 
 candidate_collection = db["candidates"]
+latest_uploaded_resume = None
