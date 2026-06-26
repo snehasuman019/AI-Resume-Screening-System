@@ -80,6 +80,8 @@ def match(request: JobDescriptionRequest):
 
     resume_path = get_resume_path()
 
+    print("Latest uploaded:", mongodb.latest_uploaded_resume)
+    print("Resume path:", resume_path)
     resume_text = extract_text_from_pdf(resume_path)
 
     resume_embedding = get_embedding(

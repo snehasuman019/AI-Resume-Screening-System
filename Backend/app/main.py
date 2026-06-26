@@ -162,6 +162,7 @@ from fastapi import FastAPI
 
 from app.routers.resume import router as resume_router
 from app.routers.matching import router as matching_router
+from app.routers.candidate import router as candidate_router
 
 app = FastAPI(
     title="AI Resume Screening System",
@@ -171,3 +172,4 @@ app = FastAPI(
 
 app.include_router(resume_router)
 app.include_router(matching_router)
+app.include_router(candidate_router)
