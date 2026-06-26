@@ -1,3 +1,6 @@
+import re
+
+
 def extract_skills(text):
 
     predefined_skills = [
@@ -30,11 +33,12 @@ def extract_skills(text):
 
     found_skills = []
 
-    text_lower = text.lower()
-
     for skill in predefined_skills:
 
-        if skill.lower() in text_lower:
+        # Create a regex pattern that matches the complete skill only
+        pattern = r"\b" + re.escape(skill) + r"\b"
+
+        if re.search(pattern, text, re.IGNORECASE):
             found_skills.append(skill)
 
     return found_skills
