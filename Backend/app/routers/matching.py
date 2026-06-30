@@ -12,7 +12,7 @@ from app.services.matching_service import calculate_similarity
 from app.services.pdf_parser import extract_text_from_pdf
 from app.services.skill_extractor import extract_skills
 from app.services.skill_gap_service import analyze_skill_gap
-
+from app.services.gemini_service import analyze_resume
 
 router = APIRouter(
     prefix="/matching",
@@ -101,6 +101,10 @@ def match(request: JobDescriptionRequest):
         resume_text,
         request.job_description
     )
+    ai_feedback = analyze_resume(
+    resume_text,
+    request.job_description
+)
 
     candidate = {
         "resume_filename": mongodb.latest_uploaded_resume,
@@ -109,6 +113,7 @@ def match(request: JobDescriptionRequest):
         "match_score": round(score, 2),
         "skills_found": skills_found,
         "missing_skills": missing_skills,
+        "ai_feedback": ai_feedback,
         "created_at": datetime.utcnow()
     }
 
@@ -119,5 +124,38 @@ def match(request: JobDescriptionRequest):
         "resume_filename": mongodb.latest_uploaded_resume,
         "match_score": round(score, 2),
         "skills_found": skills_found,
-        "missing_skills": missing_skills
+        "missing_skills": missing_skills,
+        "ai_feedback": ai_feedback
+    }
+
+
+@router.get("/gemini-test")
+def gemini_test():
+
+    resume_text = """
+Python Developer
+Machine Learning
+Docker
+Git
+SQL
+FastAPI
+"""
+
+    job_description = """
+Looking for a Machine Learning Engineer with
+Python,
+Docker,
+SQL,
+Git,
+AWS
+and Kubernetes.
+"""
+
+    feedback = analyze_resume(
+        resume_text,
+        job_description
+    )
+
+    return {
+        "feedback": feedback
     }
