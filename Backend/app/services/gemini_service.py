@@ -1,5 +1,5 @@
 import os
-
+import json
 import google.generativeai as genai
 
 from dotenv import load_dotenv
@@ -18,7 +18,7 @@ def analyze_resume(resume_text, job_description):
     prompt = f"""
 You are an expert technical recruiter.
 
-Analyze the following resume against the job description.
+Analyze the following resume against the given job description.
 
 Resume:
 {resume_text}
@@ -26,34 +26,46 @@ Resume:
 Job Description:
 {job_description}
 
-Return your response in the following format:
+Return ONLY valid JSON.
 
-Summary:
-<2-3 sentences>
+Use exactly this format:
 
-Strengths:
-- point 1
-- point 2
-- point 3
+{{
+    "summary": "",
+    "strengths": [],
+    "weaknesses": [],
+    "missing_skills": [],
+    "resume_improvements": [],
+    "interview_questions": []
+}}
 
-Weaknesses:
-- point 1
-- point 2
+Do not write markdown.
 
-Missing Skills:
-- skill 1
-- skill 2
+Do not write ```json.
 
-Resume Improvements:
-- suggestion 1
-- suggestion 2
-
-Interview Questions:
-- question 1
-- question 2
-- question 3
+Return JSON only.
 """
 
     response = model.generate_content(prompt)
 
-    return response.text
+    text = response.text.strip()
+
+    if text.startswith("```json"):
+        text = text.replace("```json", "").replace("```", "").strip()
+
+    elif text.startswith("```"):
+        text = text.replace("```", "").strip()
+
+    try:
+        return json.loads(text)
+
+    except Exception:
+
+        return {
+            "summary": text,
+            "strengths": [],
+            "weaknesses": [],
+            "missing_skills": [],
+            "resume_improvements": [],
+            "interview_questions": []
+        }
